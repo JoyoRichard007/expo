@@ -53,7 +53,16 @@ jobs:
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
       
+      - name: Find APK file
+        run: |
+          echo "Looking for APK files..."
+          find . -name "*.apk" -type f
+          echo "Current directory contents:"
+          ls -la
+      
       - uses: actions/upload-artifact@v4
         with:
           name: app-release
-          path: build-*.apk
+          path: |
+            **/*.apk
+            *.apk
