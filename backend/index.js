@@ -13,7 +13,7 @@ app.get('/health', (req, res) => {
 // Route Hello World
 app.get('/api/hello', (req, res) => {
   res.json({ 
-    message: 'Hello from Railway! 🚂',
+    message: 'Hello from Railway!',
     version: '1.0.0'
   });
 });
