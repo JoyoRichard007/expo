@@ -7,7 +7,7 @@ export default function Index() {
 
   useEffect(() => {
     // Ta vraie URL Railway
-    fetch('https://askyourcsv.up.railway.app/api/hello')
+    fetch('https://expo-production-b530.up.railway.app')
       .then(res => res.json())
       .then(data => {
         setMessage(data.message);

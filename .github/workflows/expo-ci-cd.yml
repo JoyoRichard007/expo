@@ -16,24 +16,38 @@ jobs:
       - run: npm ci
       - run: npm test -- --passWithNoTests
 
-  build:
+  deploy-backend:
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
       
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+      
+      - name: Deploy to Railway
+        run: |
+          cd backend
+          railway up --service=expotest
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
+  build:
+    needs: deploy-backend  
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-      
       - run: npm ci
       
       - name: Install EAS CLI
         run: npm install -g eas-cli
       
-      # 👇 Plus besoin de login ! EXPO_TOKEN suffit
       - name: Build Android app
         run: eas build --platform android --profile preview --non-interactive
         env:
