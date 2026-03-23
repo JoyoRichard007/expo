@@ -29,14 +29,16 @@ jobs:
       
       - run: npm ci
       
+      # 👇 Installe yarn pour que l'action Expo puisse l'utiliser
+      - name: Install yarn
+        run: npm install -g yarn
+      
       - name: Setup Expo and EAS
         uses: expo/expo-github-action@v8
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
           expo-version: latest
-          # 👇 Ajoute cette ligne pour utiliser npm
-          package-manager: npm
       
       - name: Build Android app
         run: eas build --platform android --profile preview --non-interactive
