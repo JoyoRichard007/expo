@@ -33,12 +33,7 @@ jobs:
       - name: Install EAS CLI
         run: npm install -g eas-cli
       
-      - name: Expo login
-        run: npx expo login --non-interactive
-        env:
-          EXPO_USERNAME: ${{ secrets.EXPO_USERNAME }}
-          EXPO_PASSWORD: ${{ secrets.EXPO_PASSWORD }}
-      
+      # 👇 Plus besoin de login ! EXPO_TOKEN suffit
       - name: Build Android app
         run: eas build --platform android --profile preview --non-interactive
         env:
