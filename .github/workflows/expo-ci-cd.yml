@@ -11,7 +11,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
       - run: npm ci
       - run: npm test -- --passWithNoTests
@@ -22,26 +22,27 @@ jobs:
     if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
+      
       - uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
       
       - run: npm ci
       
-      # 👇 Installe yarn pour que l'action Expo puisse l'utiliser
-      - name: Install yarn
-        run: npm install -g yarn
+      - name: Install EAS CLI
+        run: npm install -g eas-cli
       
-      - name: Setup Expo and EAS
-        uses: expo/expo-github-action@v8
-        with:
-          eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
-          expo-version: latest
+      - name: Expo login
+        run: npx expo login --non-interactive
+        env:
+          EXPO_USERNAME: ${{ secrets.EXPO_USERNAME }}
+          EXPO_PASSWORD: ${{ secrets.EXPO_PASSWORD }}
       
       - name: Build Android app
         run: eas build --platform android --profile preview --non-interactive
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
       
       - uses: actions/upload-artifact@v4
         with:
