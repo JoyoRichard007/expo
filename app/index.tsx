@@ -1,15 +1,34 @@
-import { Link } from 'expo-router';
-import { Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, Text, View } from 'react-native';
 
 export default function Index() {
+  const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Ta vraie URL Railway
+    fetch('https://askyourcsv.up.railway.app/api/hello')
+      .then(res => res.json())
+      .then(data => {
+        setMessage(data.message);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error(err);
+        setMessage('Erreur de connexion');
+        setLoading(false);
+      });
+  }, []);
+
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#667eea' }}>
-        Hello World avec Expo! 👋
-      </Text>
-      <Link href="/about" style={{ marginTop: 20, color: '#764ba2' }}>
-        Aller à la page about
-      </Link>
+      {loading ? (
+        <ActivityIndicator size="large" color="#667eea" />
+      ) : (
+        <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#667eea' }}>
+          {message}
+        </Text>
+      )}
     </View>
   );
 }
