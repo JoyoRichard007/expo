@@ -37,16 +37,20 @@ app.get('/health', (req, res) => {
   res.json({ status: 'OK', service: 'users', dbReady });
 });
 
-// Récupérer tous les utilisateurs
 app.get('/', async (req, res) => {
+  console.log('📥 GET / request received');
   if (!dbReady) {
+    console.log('❌ DB not ready');
     return res.status(503).json({ error: 'Database not ready' });
   }
   try {
+    console.log('🔍 Executing SELECT * FROM users');
     const result = await client.query('SELECT * FROM users');
+    console.log('✅ Query result:', result.rows);
     res.json(result.rows);
   } catch (err) {
-    console.error(err);
+    console.error('❌ Database error in GET /:', err.message);
+    console.error('Full error:', err);
     res.status(500).json({ error: 'Database error', details: err.message });
   }
 });
