@@ -10,7 +10,13 @@ const client = new Client({
 //   ssl: false 
 });
 
-client.connect();
+client.connect()
+    .then(() => {
+        console.log('✅ Connected to PostgreSQL');
+        return client.query('SELECT NOW()');
+    })
+    .then(res => console.log('✅ DB time:', res.rows[0]))
+    .catch(err => console.error('❌ DB connection error:', err.message));
 
 // Créer la table users si elle n'existe pas
 client.query(`
