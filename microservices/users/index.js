@@ -32,7 +32,7 @@ app.get('/health', (req, res) => {
   res.json({ status: 'OK', service: 'users' });
 });
 
-const PORT = process.env.PORT || 3002;
+const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`✅ Users service running on port ${PORT}`);
 });
