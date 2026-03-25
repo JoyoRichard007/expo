@@ -21,6 +21,12 @@ client.query(`
   )
 `);
 
+// Health check
+app.get('/health', (req, res) => {
+  // Réponse immédiate sans vérifier la DB
+  res.json({ status: 'OK', service: 'users' });
+});
+
 // Récupérer tous les utilisateurs
 app.get('/', async (req, res) => {
   try {
@@ -57,11 +63,6 @@ app.post('/', async (req, res) => {
     console.error(err);
     res.status(500).json({ error: 'Database error' });
   }
-});
-
-// Health check
-app.get('/health', (req, res) => {
-  res.json({ status: 'OK', service: 'users' });
 });
 
 const PORT = process.env.PORT || 8080;
