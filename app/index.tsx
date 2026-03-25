@@ -7,7 +7,7 @@ export default function Index() {
   const [token, setToken] = useState('');
 
   // Remplace par ton IP
-  const GATEWAY_URL = 'http://192.168.0.200:3000';
+  const GATEWAY_URL = 'https://gateway-production-95ae.up.railway.app';
 
   const fetchUsers = async () => {
     try {

@@ -4,44 +4,43 @@ const app = express();
 
 app.use(express.json());
 
-// Log toutes les requêtes entrantes
-app.use((req, res, next) => {
-  console.log(`🚪 Gateway received: ${req.method} ${req.url}`);
-  next();
-});
+// URLs des services (via variables d'environnement Railway)
+const AUTH_URL = process.env.AUTH_SERVICE_URL || 'http://localhost:3001';
+const USERS_URL = process.env.USER_SERVICE_URL || 'http://localhost:3002';
 
-// Auth proxy
+console.log(`🔗 Auth service URL: ${AUTH_URL}`);
+console.log(`🔗 Users service URL: ${USERS_URL}`);
+
+// Proxy vers le service Auth
 app.use('/auth', createProxyMiddleware({
-  target: 'http://localhost:3001',
+  target: AUTH_URL,
   changeOrigin: true,
   pathRewrite: { '^/auth': '' },
   onProxyReq: (proxyReq, req, res) => {
     console.log(`🔄 Proxying to Auth: ${req.method} ${req.url}`);
-    if (req.body) {
-      const bodyData = JSON.stringify(req.body);
-      proxyReq.setHeader('Content-Type', 'application/json');
-      proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
-      proxyReq.write(bodyData);
-    }
-  },
-  onProxyRes: (proxyRes, req, res) => {
-    console.log(`✅ Auth responded with status: ${proxyRes.statusCode}`);
   },
   onError: (err, req, res) => {
-    console.error('❌ Proxy error:', err);
+    console.error('❌ Auth proxy error:', err.message);
     res.status(500).json({ error: 'Proxy error', details: err.message });
   }
 }));
 
-// Users proxy
+// Proxy vers le service Users
 app.use('/users', createProxyMiddleware({
-  target: 'http://localhost:3002',
+  target: USERS_URL,
   changeOrigin: true,
-  pathRewrite: { '^/users': '' }
+  pathRewrite: { '^/users': '' },
+  onProxyReq: (proxyReq, req, res) => {
+    console.log(`🔄 Proxying to Users: ${req.method} ${req.url}`);
+  },
+  onError: (err, req, res) => {
+    console.error('❌ Users proxy error:', err.message);
+    res.status(500).json({ error: 'Proxy error', details: err.message });
+  }
 }));
 
+// Health check
 app.get('/health', (req, res) => {
-  console.log('❤️ Gateway health check');
   res.json({ status: 'OK', service: 'gateway' });
 });
 
