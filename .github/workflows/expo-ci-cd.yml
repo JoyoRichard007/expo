@@ -16,7 +16,7 @@ jobs:
       - run: npm ci
       - run: npm test -- --passWithNoTests
 
-  deploy-backend:
+  deploy-microservices:
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
@@ -26,15 +26,29 @@ jobs:
       - name: Install Railway CLI
         run: npm install -g @railway/cli
       
-      - name: Deploy to Railway
+      - name: Deploy Gateway
         run: |
-          cd backend
-          railway up --service=Expo
+          cd microservices/gateway
+          railway up --service=gateway
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      
+      - name: Deploy Auth
+        run: |
+          cd microservices/auth
+          railway up --service=auth
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      
+      - name: Deploy Users
+        run: |
+          cd microservices/users
+          railway up --service=users
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
   build:
-    needs: deploy-backend  
+    needs: deploy-microservices
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:
